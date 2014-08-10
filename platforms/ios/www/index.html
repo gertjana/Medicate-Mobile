@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>jQM Complex Demo</title>
+        <meta http-equiv='Content-Type' content='text/html; charset=utf-8'/>
+        <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"/>
+        <!-- <link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.0-beta.1/jquery.mobile-1.4.0-beta.1.min.css"/> -->
+        <link rel="stylesheet" href="http://example.gajotres.net/iscrollview/jquery.mobile.iscrollview.css"/>
+        <link rel="stylesheet" href="http://example.gajotres.net/iscrollview/jquery.mobile.iscrollview-pull.css"/>
+        <link rel="stylesheet" href="css/jquery.mobile.flatui.css"/>
+
+        <style>
+            .ui-content {
+                padding: 0 !important;
+            }
+              
+            .ui-listview {
+                margin: 0 !important;
+            }
+              
+            .example-wrapper, .example-wrapper div.iscroll-scroller {
+                width: 100% !important;
+            }
+            #medicine,#profile,#settings {
+              padding-top:20px;
+            }
+        </style>
+        <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
+        <script src="http://code.jquery.com/mobile/1.4.0-beta.1/jquery.mobile-1.4.0-beta.1.min.js"></script>
+        <script src="http://example.gajotres.net/iscrollview/iscroll.js"></script>
+        <script src="http://example.gajotres.net/iscrollview/jquery.mobile.iscrollview.js"></script>
+        <script>
+            var baseUrl = "http://medicate.addictivesoftware.net";
+
+            function updateList(url) {
+              console.log(baseUrl+url);
+              $.ajax({
+                url: baseUrl+url,
+                dataType: "json",
+                async: true,
+                success: function (result) {
+                  ajax.parseJSON(result);
+                },
+                error: function (request,error) {
+                  alert('Network error has occurred please try again!');
+                }
+              });                        
+            }
+
+
+            $(document).on('pageinit', '#medicine', function(){     
+              var url = '/api/medicine';
+              updateList(url)
+
+              $("#medicine-search").bind( "change", function(event, ui) {
+                console.log("searching....");
+                var url = "/api/medicine/search/" + this.value;
+                updateList(url);
+              });   
+
+            });
+ 
+            $(document).on('pagebeforeshow', '#medicine_detail', function(){     
+              $('#medicine-data').empty();
+              $.each(medicineInfo.result, function(i, row) {
+                if(row.id == medicineInfo.id) {
+                  $('#medicine-data').append('<li>Name: '+row.name+'</li>');
+                  $('#medicine-data').append('<li>Brand: '+row.brand+'</li>');
+                  $('#medicine-data').append('<li>Amount: '+row.amount+'</li>');
+                  $('#medicine-data').append('<li style="height:100%;">Description: TODO</li>');
+                  $('#medicine-data').listview('refresh');           
+                }
+              });   
+            });
+ 
+            $(document).on('vclick', '#medicine-list li a', function(){ 
+                medicineInfo.id = $(this).attr('data-id');
+                $.mobile.changePage( "#medicine_detail", { transition: "slide", changeHash: false });
+            });
+ 
+            var medicineInfo = {
+              id : null,
+              result : null
+            }
+ 
+            var navigation = {
+              prev: null,
+              next: null,
+            }
+
+            var ajax = { 
+              parseJSON:function(result){ 
+                $('#medicine-list').empty();
+                medicineInfo.result = result.results;
+                if (result._links.prev) {navigation.prev = result._links.prev.href;}
+                if (result._links.next) {navigation.next = result._links.next.href;}
+                $.each(result.results, function(i, row) {
+                  //console.log(JSON.stringify(row));
+                  $('#medicine-list').append('<li><a href="" data-id="' + row.id + '"><h3>' + row.name + '(' + row.amount + ')</h3></a></li>');
+                });
+                $('#medicine-list').listview('refresh');
+              }
+            }    
+
+            $(document).on('vclick', '#medicine #prev', function() {
+              if (navigation.prev) {updateList(navigation.prev);}
+            });  
+
+            $(document).on('vclick', '#medicine #next', function() {
+              if (navigation.next) {updateList(navigation.next);}
+            });  
+        </script>
+    </head>
+    <body> 
+        <!-- Settings page -->   
+        <div date-role="page" id="settings">
+            <div data-theme="c" data-role="header">
+                <h3>
+                    Settings
+                </h3>
+            </div>
+            <div data-role="content">
+                <div class="example-wrapper" data-iscroll>
+                    Settings.....
+                </div>
+            </div>
+            <div data-theme="c" data-role="footer">
+                <div data-role="navbar">
+                    <ul>
+                      <li><a href="#profile" data-theme="c" data-ajax="false" data-icon="flat-man">Profile</a></li>
+                      <li><a href="#medicine" data-theme="c" data-ajax="false" data-icon="flat-heart">Medicine</a></li>
+                      <li><a href="#settings" data-theme="c" data-ajax="false" data-icon="flat-settings">Settings</a></li>
+                    </ul>
+                </div>
+            </div>             
+        </div>
+        <!-- Profile page -->
+        <div date-role="page" id="profile">
+            <div data-theme="c" data-role="header">
+                <h3>
+                    Profile
+                </h3>
+            </div>
+            <div data-role="content">
+                <div class="example-wrapper" data-iscroll>
+                    Profile.....
+                </div>
+            </div>
+            <div data-theme="c" data-role="footer">
+                <div data-role="navbar">
+                    <ul>
+                      <li><a href="#profile" data-theme="c" data-ajax="false" data-icon="flat-man">Profile</a></li>
+                      <li><a href="#medicine" data-theme="c" data-ajax="false" data-icon="flat-heart">Medicine</a></li>
+                      <li><a href="#settings" data-theme="c" data-ajax="false" data-icon="flat-settings">Settings</a></li>
+                    </ul>
+                </div>
+            </div>             
+        </div>
+
+        <!-- medicine page -->
+        <div data-role="page" id="medicine">
+            <div data-theme="c" data-role="header">
+                <a href="#medicine" id="prev" class="ui-btn-left" data-transition="slide" data-direction="reverse">Prev</a>
+                <a href="#medicine" id="next" class="ui-btn-right" data-transition="slide" data-direction="reverse">Next</a>
+                <h3>
+                    Medicine List
+                </h3>
+            </div>       
+            <div data-role="content">
+              <input type="search" name="search" id="medicine-search" value="" />
+              <div class="example-wrapper" data-iscroll>
+                <ul data-role="listview" id="medicine-list" data-theme="c">
+                     
+                </ul>
+              </div>
+            </div>
+            <div data-theme="c" data-role="footer">
+                <div data-role="navbar">
+                    <ul>
+                      <li><a href="#profile" data-theme="c" data-ajax="false" data-icon="flat-man">Profile</a></li>
+                      <li><a href="#medicine" data-theme="c" data-ajax="false" data-icon="flat-heart">Medicine</a></li>
+                      <li><a href="#settings" data-theme="c" data-ajax="false" data-icon="flat-settings">Settings</a></li>
+                    </ul>
+                </div>
+            </div>             
+        </div>
+        <!-- medicine detail view -->
+        <div data-role="page" id="medicine_detail">
+            <div data-theme="c" data-role="header">
+                <a href="#medicine" class="ui-btn-left" data-transition="slide" data-direction="reverse">Back</a>                       
+                <h3>
+                    Medicine Info
+                </h3>
+            </div>       
+            <div data-role="content">
+                <ul data-role="listview" id="medicine-data" data-theme="a"></ul>
+            </div>
+        </div>   
+    </body>
+</html> 
