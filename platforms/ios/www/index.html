@@ -25,6 +25,9 @@
             #medicine,#profile,#settings {
               padding-top:20px;
             }
+            table {
+              width:90%;
+            }
         </style>
         <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
         <script src="http://code.jquery.com/mobile/1.4.0-beta.1/jquery.mobile-1.4.0-beta.1.min.js"></script>
@@ -61,19 +64,18 @@
             });
 
             $(document).on('pageinit', '#profile', function(){
-                console.log("profile");
-            //   var url = "/api/profile/571369a7e254413f88ecf7f4fbe4b453";
-            //   $.ajax({
-            //     url: baseUrl+url,
-            //     dataType: "json",
-            //     async: true,
-            //     sucess: function(result) {
-            //       ajax.parseProfile(result);
-            //     },
-            //     error: function (request,error) {
-            //       alert('Network error has occurred please try again!');
-            //     }
-            //   });
+              var url = "/api/profile/571369a7e254413f88ecf7f4fbe4b453";
+              $.ajax({
+                url: baseUrl+url,
+                dataType: "json",
+                async: true,
+                success: function(result) {
+                  ajax.parseProfile(result);
+                },
+                error: function (request,error) {
+                  alert('Network error has occurred please try again!');
+                }
+              });
              });
 
  
@@ -116,12 +118,39 @@
                   $('#medicine-list').append('<li style="margin:0px;"><a href="" data-id="' + row.id + '"><h5>' + row.name + '(' + row.amount + ')</h5></a></li>');
                 });
                 $('#medicine-list').listview('refresh');
-              }//,
-              //parseProfile: function(result) {
-                // $('#first').empty().append(result._embedded.user.firstName);
-                // $('#last').empty().append(result._embedded.user.lastName);
-                // $('#email').empty().append(result._embedded.user.email);
-              //}
+              },
+              parseProfile: function(result) {
+                $('#first').empty();
+                $('#first').append(result._embedded.user.firstName);
+                $('#last').empty();
+                $('#last').append(result._embedded.user.lastName);
+                $('#email').empty();
+                $('#email').append(result._embedded.user.email);
+
+                $('#supply-list').empty();
+                $('#supply-list').append('<tr><th>Medicine</th><th>Days Left</th>');
+                $.each(result.supplies, function(i, row) {
+                  $('#supply-list').append("<tr><td>" + row.name + "</td><td>" + row.daysLeft + "</td></tr>");
+                });
+
+                $('#stock-list').empty();
+                $('#stock-list').append('<tr><th>Medicine</th><th>Amount</th>');
+                $.each(result.stock, function(i, row) {
+                  $('#stock-list').append("<tr><td>" + row.name + "</td><td>" + row.amount + "</td></tr>");
+                });
+
+                $('#dosage-list').empty();
+                $('#dosage-list').append('<tr><th>Medicine</th><th>Days Left</th>');
+                $.each(result.dosages, function(i, row) {
+                  $('#dosage-list').append("<tr><td>" + row.name + "</td><td>" + row.amount + "</td></tr>");
+                });
+
+                $('#schedule-list').empty();
+                $('#schedule-list').append('<tr><th>Name</th><th>Time</th>');
+                $.each(result._embedded.schedule, function(i,row) {
+                  $('schedule-list').append("<tr><td>" + row.name + "</td><td>" + row.time + "</td></tr>");
+                });
+              }
             }    
 
             $(document).on('vclick', '#medicine #prev', function() {
@@ -160,17 +189,25 @@
                         </tr>
                       </table>
                     </div>
-                    <div data-role="collapsible" data-collapsed="false">
+                    <div data-role="collapsible" data-theme="c" data-collapsed="false">
                       <h3>Supplies</h3>
-                      <p>supply info...</p>
+                      <table id="supply-list">
+                      </table>
                     </div>
-                    <div data-role="collapsible">
+                    <div data-role="collapsible" data-theme="c" data-collapsed="false">
                       <h3>Stock</h3>
-                      <p>stock info...</p>
+                      <table id="stock-list">
+                      </table>
                     </div>
-                    <div data-role="collapsible">
+                    <div data-role="collapsible" data-theme="c" data-collapsed="false">
                       <h3>Dosages</h3>
-                      <p>dosage info...</p>
+                      <table id="dosage-list">
+                      </table>
+                    </div>
+                    <div data-role="collapsible" data-theme="c" data-collapsed="false">
+                      <h3>Schedule</h3>
+                      <table id="schedule-list">
+                      </table>
                     </div>
                 </div>
             </div> 
