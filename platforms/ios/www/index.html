@@ -12,6 +12,7 @@
         <style>
             .ui-content {
                 padding: 0 !important;
+                height:50%;
             }
               
             .ui-listview {
@@ -39,7 +40,7 @@
                 dataType: "json",
                 async: true,
                 success: function (result) {
-                  ajax.parseJSON(result);
+                  ajax.parseMedicine(result);
                 },
                 error: function (request,error) {
                   alert('Network error has occurred please try again!');
@@ -47,9 +48,8 @@
               });                        
             }
 
-
             $(document).on('pageinit', '#medicine', function(){     
-              var url = '/api/medicine';
+              var url = '/api/medicine?limit=10&offset=0';
               updateList(url)
 
               $("#medicine-search").bind( "change", function(event, ui) {
@@ -59,6 +59,23 @@
               });   
 
             });
+
+            $(document).on('pageinit', '#profile', function(){
+                console.log("profile");
+            //   var url = "/api/profile/571369a7e254413f88ecf7f4fbe4b453";
+            //   $.ajax({
+            //     url: baseUrl+url,
+            //     dataType: "json",
+            //     async: true,
+            //     sucess: function(result) {
+            //       ajax.parseProfile(result);
+            //     },
+            //     error: function (request,error) {
+            //       alert('Network error has occurred please try again!');
+            //     }
+            //   });
+             });
+
  
             $(document).on('pagebeforeshow', '#medicine_detail', function(){     
               $('#medicine-data').empty();
@@ -85,21 +102,26 @@
  
             var navigation = {
               prev: null,
-              next: null,
+              next: null
             }
 
             var ajax = { 
-              parseJSON:function(result){ 
+              parseMedicine:function(result){ 
                 $('#medicine-list').empty();
                 medicineInfo.result = result.results;
                 if (result._links.prev) {navigation.prev = result._links.prev.href;}
                 if (result._links.next) {navigation.next = result._links.next.href;}
                 $.each(result.results, function(i, row) {
                   //console.log(JSON.stringify(row));
-                  $('#medicine-list').append('<li><a href="" data-id="' + row.id + '"><h3>' + row.name + '(' + row.amount + ')</h3></a></li>');
+                  $('#medicine-list').append('<li style="margin:0px;"><a href="" data-id="' + row.id + '"><h5>' + row.name + '(' + row.amount + ')</h5></a></li>');
                 });
                 $('#medicine-list').listview('refresh');
-              }
+              }//,
+              //parseProfile: function(result) {
+                // $('#first').empty().append(result._embedded.user.firstName);
+                // $('#last').empty().append(result._embedded.user.lastName);
+                // $('#email').empty().append(result._embedded.user.email);
+              //}
             }    
 
             $(document).on('vclick', '#medicine #prev', function() {
@@ -112,28 +134,6 @@
         </script>
     </head>
     <body> 
-        <!-- Settings page -->   
-        <div date-role="page" id="settings">
-            <div data-theme="c" data-role="header">
-                <h3>
-                    Settings
-                </h3>
-            </div>
-            <div data-role="content">
-                <div class="example-wrapper" data-iscroll>
-                    Settings.....
-                </div>
-            </div>
-            <div data-theme="c" data-role="footer">
-                <div data-role="navbar">
-                    <ul>
-                      <li><a href="#profile" data-theme="c" data-ajax="false" data-icon="flat-man">Profile</a></li>
-                      <li><a href="#medicine" data-theme="c" data-ajax="false" data-icon="flat-heart">Medicine</a></li>
-                      <li><a href="#settings" data-theme="c" data-ajax="false" data-icon="flat-settings">Settings</a></li>
-                    </ul>
-                </div>
-            </div>             
-        </div>
         <!-- Profile page -->
         <div date-role="page" id="profile">
             <div data-theme="c" data-role="header">
@@ -143,19 +143,38 @@
             </div>
             <div data-role="content">
                 <div class="example-wrapper" data-iscroll>
-                    Profile.....
+                    <div data-role="collapsible" data-theme="c" data-collapsed="false">
+                      <h3>User</h3>
+                      <table>
+                        <tr>
+                          <td>First</td>
+                          <td id="first"></td>
+                        </tr>
+                        <tr>
+                          <td>Last</td>
+                          <td id="last"></td>
+                        </tr>
+                        <tr>
+                          <td>E-mail</td>
+                          <td id="email"></td>
+                        </tr>
+                      </table>
+                    </div>
+                    <div data-role="collapsible" data-collapsed="false">
+                      <h3>Supplies</h3>
+                      <p>supply info...</p>
+                    </div>
+                    <div data-role="collapsible">
+                      <h3>Stock</h3>
+                      <p>stock info...</p>
+                    </div>
+                    <div data-role="collapsible">
+                      <h3>Dosages</h3>
+                      <p>dosage info...</p>
+                    </div>
                 </div>
-            </div>
-            <div data-theme="c" data-role="footer">
-                <div data-role="navbar">
-                    <ul>
-                      <li><a href="#profile" data-theme="c" data-ajax="false" data-icon="flat-man">Profile</a></li>
-                      <li><a href="#medicine" data-theme="c" data-ajax="false" data-icon="flat-heart">Medicine</a></li>
-                      <li><a href="#settings" data-theme="c" data-ajax="false" data-icon="flat-settings">Settings</a></li>
-                    </ul>
-                </div>
-            </div>             
-        </div>
+            </div> 
+        </div> 
 
         <!-- medicine page -->
         <div data-role="page" id="medicine">
@@ -174,7 +193,7 @@
                 </ul>
               </div>
             </div>
-            <div data-theme="c" data-role="footer">
+            <div data-theme="c" data-role="footer" data-position="fixed">
                 <div data-role="navbar">
                     <ul>
                       <li><a href="#profile" data-theme="c" data-ajax="false" data-icon="flat-man">Profile</a></li>
@@ -196,5 +215,28 @@
                 <ul data-role="listview" id="medicine-data" data-theme="a"></ul>
             </div>
         </div>   
+                <!-- Settings page -->   
+        <div date-role="page" id="settings">
+            <div data-theme="c" data-role="header">
+                <h3>
+                    Settings
+                </h3>
+            </div>
+            <div data-role="content">
+                <div class="example-wrapper" data-iscroll>
+                    Settings.....
+                </div>
+            </div>
+            <div data-theme="c" data-role="footer" data-position="fixed">
+                <div data-role="navbar">
+                    <ul>
+                      <li><a href="#profile" data-theme="c" data-ajax="false" data-icon="flat-man">Profile</a></li>
+                      <li><a href="#medicine" data-theme="c" data-ajax="false" data-icon="flat-heart">Medicine</a></li>
+                      <li><a href="#settings" data-theme="c" data-ajax="false" data-icon="flat-settings">Settings</a></li>
+                    </ul>
+                </div>
+            </div>             
+        </div>
+
     </body>
 </html> 
