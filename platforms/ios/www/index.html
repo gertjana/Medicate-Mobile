@@ -4,7 +4,7 @@
         <title>jQM Complex Demo</title>
         <meta http-equiv='Content-Type' content='text/html; charset=utf-8'/>
         <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"/>
-        <!-- <link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.0-beta.1/jquery.mobile-1.4.0-beta.1.min.css"/> -->
+        <!-- <link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.3/jquery.mobile-1.4.3.min.css"/> -->
         <link rel="stylesheet" href="http://example.gajotres.net/iscrollview/jquery.mobile.iscrollview.css"/>
         <link rel="stylesheet" href="http://example.gajotres.net/iscrollview/jquery.mobile.iscrollview-pull.css"/>
         <link rel="stylesheet" href="css/jquery.mobile.flatui.css"/>
@@ -26,11 +26,33 @@
               padding-top:20px;
             }
             table {
-              width:90%;
+              width:100%;
+              border-spacing: 0px;
             }
+
+            tr:nth-child(1) th {
+              background-color: #9cf;
+            }
+
+            th {
+              background-color: #bdf;
+            }
+
+            .center {
+              text-align: center;
+            }
+
+            .third {
+              width: 33%;
+            }
+
+            .ui-icon-plus:after {
+              right:10px;
+            }
+
         </style>
         <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
-        <script src="http://code.jquery.com/mobile/1.4.0-beta.1/jquery.mobile-1.4.0-beta.1.min.js"></script>
+        <script src="http://code.jquery.com/mobile/1.4.3/jquery.mobile-1.4.3.min.js"></script>
         <script src="http://example.gajotres.net/iscrollview/iscroll.js"></script>
         <script src="http://example.gajotres.net/iscrollview/jquery.mobile.iscrollview.js"></script>
         <script>
@@ -128,27 +150,33 @@
                 $('#email').append(result._embedded.user.email);
 
                 $('#supply-list').empty();
+                $('#supply-list').append('<tr><th colspan="2">Supplies</th>');
                 $('#supply-list').append('<tr><th>Medicine</th><th>Days Left</th>');
                 $.each(result.supplies, function(i, row) {
-                  $('#supply-list').append("<tr><td>" + row.name + "</td><td>" + row.daysLeft + "</td></tr>");
+                  $('#supply-list').append("<tr><td>" + row.name + "</td><td class='center third'>" + row.daysLeft + "</td></tr>");
                 });
 
                 $('#stock-list').empty();
                 $('#stock-list').append('<tr><th>Medicine</th><th>Amount</th>');
                 $.each(result.stock, function(i, row) {
-                  $('#stock-list').append("<tr><td>" + row.name + "</td><td>" + row.amount + "</td></tr>");
+                  $('#stock-list').append("<tr><td>" + row.name + "</td><td class='center third'>" + row.amount + "</td></tr>");
                 });
 
                 $('#dosage-list').empty();
-                $('#dosage-list').append('<tr><th>Medicine</th><th>Days Left</th>');
+                $('#dosage-list').append('<tr><th>Medicine</th><th>Amount</th>');
+                var old = "";
                 $.each(result.dosages, function(i, row) {
-                  $('#dosage-list').append("<tr><td>" + row.name + "</td><td>" + row.amount + "</td></tr>");
+                  if (row.schedule != old) {
+                    old = row.schedule;
+                    $('#dosage-list').append('<tr><th colspan="2">' + row.schedule + '</th></tr>');
+                  }
+                  $('#dosage-list').append("<tr><td>" + row.name + "</td><td class='center third'>" + row.amount + "</td></tr>");
                 });
 
                 $('#schedule-list').empty();
                 $('#schedule-list').append('<tr><th>Name</th><th>Time</th>');
                 $.each(result._embedded.schedule, function(i,row) {
-                  $('schedule-list').append("<tr><td>" + row.name + "</td><td>" + row.time + "</td></tr>");
+                  $('#schedule-list').append("<tr><td>" + row.name + "</td><td class='center third'>" + row.time + "</td></tr>");
                 });
               }
             }    
@@ -165,57 +193,58 @@
     <body> 
         <!-- Profile page -->
         <div date-role="page" id="profile">
-            <div data-theme="c" data-role="header">
-                <h3>
-                    Profile
-                </h3>
+          <div data-theme="f" data-role="header">
+            <h3>
+              Profile
+            </h3>
+          </div>
+          <div data-role="content">
+            <table>
+              <tr>
+                <th colspan="2">User</th>
+              </tr>
+              <tr>
+                  <td id="first"></td>
+                  <td class="left" id="last"></td>
+              </tr>
+              <tr>
+                <td colspan="2" id="email"></td>
+              </tr>
+            </table>
+            <table id="supply-list">
+            </table>
+            <div data-role="collapsible-set" data-theme="c" data-mini="true" data-inset="false" data-iconpos="right">
+              <div data-role="collapsible">
+                <h3>Stock</h3>
+                <table id="stock-list">
+                </table>
+              </div>
+              <div data-role="collapsible">
+                <h3>Dosages</h3>
+                <table id="dosage-list">
+                </table>
+              </div>
+              <div data-role="collapsible">
+                <h3>Schedule</h3>
+                <table id="schedule-list">
+                </table>
+              </div>
             </div>
-            <div data-role="content">
-                <div class="example-wrapper" data-iscroll>
-                    <div data-role="collapsible" data-theme="c" data-collapsed="false">
-                      <h3>User</h3>
-                      <table>
-                        <tr>
-                          <td>First</td>
-                          <td id="first"></td>
-                        </tr>
-                        <tr>
-                          <td>Last</td>
-                          <td id="last"></td>
-                        </tr>
-                        <tr>
-                          <td>E-mail</td>
-                          <td id="email"></td>
-                        </tr>
-                      </table>
-                    </div>
-                    <div data-role="collapsible" data-theme="c" data-collapsed="false">
-                      <h3>Supplies</h3>
-                      <table id="supply-list">
-                      </table>
-                    </div>
-                    <div data-role="collapsible" data-theme="c" data-collapsed="false">
-                      <h3>Stock</h3>
-                      <table id="stock-list">
-                      </table>
-                    </div>
-                    <div data-role="collapsible" data-theme="c" data-collapsed="false">
-                      <h3>Dosages</h3>
-                      <table id="dosage-list">
-                      </table>
-                    </div>
-                    <div data-role="collapsible" data-theme="c" data-collapsed="false">
-                      <h3>Schedule</h3>
-                      <table id="schedule-list">
-                      </table>
-                    </div>
-                </div>
-            </div> 
+            <div data-theme="c" data-role="footer" data-position="fixed">
+              <div data-role="navbar">
+                <ul>
+                  <li><a href="#profile" data-theme="c" data-ajax="false" data-icon="flat-man">Profile</a></li>
+                  <li><a href="#medicine" data-theme="c" data-ajax="false" data-icon="flat-heart">Medicine</a></li>
+                  <li><a href="#settings" data-theme="c" data-ajax="false" data-icon="flat-settings">Settings</a></li>
+                </ul>
+              </div>
+            </div>             
+          </div> 
         </div> 
 
         <!-- medicine page -->
         <div data-role="page" id="medicine">
-            <div data-theme="c" data-role="header">
+            <div data-theme="f" data-role="header">
                 <a href="#medicine" id="prev" class="ui-btn-left" data-transition="slide" data-direction="reverse">Prev</a>
                 <a href="#medicine" id="next" class="ui-btn-right" data-transition="slide" data-direction="reverse">Next</a>
                 <h3>
@@ -242,7 +271,7 @@
         </div>
         <!-- medicine detail view -->
         <div data-role="page" id="medicine_detail">
-            <div data-theme="c" data-role="header">
+            <div data-theme="f" data-role="header">
                 <a href="#medicine" class="ui-btn-left" data-transition="slide" data-direction="reverse">Back</a>                       
                 <h3>
                     Medicine Info
@@ -254,7 +283,7 @@
         </div>   
                 <!-- Settings page -->   
         <div date-role="page" id="settings">
-            <div data-theme="c" data-role="header">
+            <div data-theme="b" data-role="header">
                 <h3>
                     Settings
                 </h3>
